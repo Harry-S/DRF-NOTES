@@ -12,6 +12,7 @@
   - [普通模式（非Restful）](#%E6%99%AE%E9%80%9A%E6%A8%A1%E5%BC%8F%E9%9D%9Erestful)
   - [Restful规范（建议使用）](#restful%E8%A7%84%E8%8C%83%E5%BB%BA%E8%AE%AE%E4%BD%BF%E7%94%A8)
     - [规范详解（http://www.cnblogs.com/wupeiqi/articles/7805382.html）](#%E8%A7%84%E8%8C%83%E8%AF%A6%E8%A7%A3httpwwwcnblogscomwupeiqiarticles7805382html)
+    - [自己对Restful API规范的认知](#%E8%87%AA%E5%B7%B1%E5%AF%B9restful-api%E8%A7%84%E8%8C%83%E7%9A%84%E8%AE%A4%E7%9F%A5)
 
 <!-- /TOC -->
 
@@ -301,7 +302,7 @@ def users(request):
 
 # 接口开发
 
-- 出发点：对某项资源做增删改查！后端开发接口给前端调用
+出发点：对某项资源做增删改查！后端开发接口给前端调用
 
 ## 普通模式（非Restful）
 
@@ -463,3 +464,7 @@ class OrderView(View):
 /order/
 /order/1/
 ```
+
+### 自己对Restful API规范的认知
+
+- 它本质就是一种规范，让前后端对接口开发与使用更加方便与明显
