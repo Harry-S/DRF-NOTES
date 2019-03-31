@@ -376,24 +376,90 @@ class OrderView(View):
 
 ### 规范详解（http://www.cnblogs.com/wupeiqi/articles/7805382.html）
 
-- API与用户的通信协议，总是使用HTTPS协议（推荐）
-- 域名
+- **API与用户的通信协议，总是使用HTTPS协议（推荐）**
+- **域名**
   - `https://api.example.com`     子域名的方式（需要解决跨域问题）
   - `https://example.org/api/`    URL方式（同一个域名，只是URL不同）
-- 版本
+- **版本**
   - URL（建议）
     - `https://example.org/api/v1/`
     - `https://example.org/api/v2/`
     - `https://example.org/api/v3/`
   - 请求头
-- 面向资源编程
+- **面向资源编程**
   - 本质：把网络上任何东西都认为是**资源（均使用名词表示，也可复数）**，对这个资源可以做增删改查
   - https://example.org/api/v1/zoos
   - https://example.org/api/v1/animals
   - https://example.org/api/v1/employees
-- Request Method
+- **Request Method**
   - GET：从服务器去除资源（一项或多项）
   - POST：在服务器新建一个资源
   - PUT：在服务器更新资源（客户端提供改变后的完整资源）
   - PATCH：在服务器更新资源（客户端提供改变的属性）
   - DELETE：从服务器删除资源
+- **过滤，通过在url上传参的形式传递搜索条件**
+  - `https://example.org/api/v1/zoos?limit=10：指定返回记录的数据`
+  - `https://example.org/api/v1/zoos?offset=10：指定返回记录的开始位置`
+  - `https://example.org/api/v1/zoos?page=2&per_page=100：指定第几页，以及每页的记录数`
+  - `https://example.org/api/v1/zoos?sortby=name&order=asc：指定返回结果按照哪个属性排序，以及排序顺序`
+  - `https://example.org/api/v1/zoos?animal_type_id=1：指定筛选条件`
+- **状态码**
+  - `作用`：用状态码给用户做提示
+  - `问题`：状态码又远远不够。譬如：创建一个数据，创建的时候，可能回出现各种错误，比如返回数据不存在、数据没找到、数据正在被使用，数据的状态有很多。所以一般我们用API做返回的时候，会用code字段来做状态码，用于表示更多状态
+  - `使用`：一般状态码和code结合使用
+  - `注意`：一般做接口开发，要问清楚前端是否需要状态码？
+  - `系列`
+    - 200系列：成功
+    - 300系列：重定向
+    - 400系列：客户端错误
+    - 500系列：服务端错误
+
+```python
+# 一般状态码和code结合使用
+class OrderView(View):
+    def get(self, *args, **kwargs):
+        ret = {
+            'code': 1000,
+            'msg': 'xxx'
+        }
+        return HttpResponse(json.dumps(ret), status=201)
+```
+
+- **错误处理**
+  - 状态码是4xx时，应该返回错误信息，error当作key
+
+```json
+{
+    error: "Invalid API Key"
+}
+```
+
+- **返回结果，针对不同操作，服务器向用户返回的结果应该符合以下规范**（/collection/resource）
+  - GET /order/：返回资源对象的列表（数组）
+  - GET /order/1/：返回单个资源对象
+  - POST /order/：返回新生成的资源对象
+  - PUT /order/1/：返回完整的资源对象
+  - PATCH /order/1/：返回完整的资源对象
+  - DELETE /order/1/：返回一个空文档
+  
+- **Hypermedia API**，RESTful API最好做到Hypermedia，即返回结果中提供链接，连向其他API方法，使得用户不查文档，也知道下一步应该做什么
+
+```python
+[
+    {
+        id: 1,
+        name: 'A',
+        price: xx,
+        url: 'http://xxx.com/1/'
+    },
+    {
+        id: 2,
+        name: 'B',
+        price: xx,
+        url: 'http://xxx.com/2/'
+    }
+]
+
+/order/
+/order/1/
+```
